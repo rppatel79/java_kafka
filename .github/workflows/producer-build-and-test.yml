@@ -1,6 +1,6 @@
 # To test this workflow, you can use the following command:
 # act push -W .github/workflows/producer-build-and-test.yml
-name: Build and Test
+name: Producter | Build and Test
 
 on:
   push:

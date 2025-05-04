@@ -1,6 +1,6 @@
 # To test this workflow, you can use the following command:
 # act push -W .github/workflows/consumer-build-and-test.yml
-name: Build and Test
+name: Consumer | Build and Test
 
 on:
   push:
