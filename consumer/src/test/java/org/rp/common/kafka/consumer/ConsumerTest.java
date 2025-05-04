@@ -1,4 +1,4 @@
-package org.rp.common.kafka;
+package org.rp.common.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.junit.jupiter.api.Test;

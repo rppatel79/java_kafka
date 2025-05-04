@@ -1,4 +1,4 @@
-package org.rp.common.kafka;
+package org.rp.common.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.Metric;
