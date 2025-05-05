@@ -4,6 +4,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +25,16 @@ public class KafkaConsumerIntegrationTest {
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
+
+    @BeforeEach
+    public void setUp() {
+        if (embeddedKafkaBroker == null) {
+            System.out.println("Creating new EmbeddedKafkaBroker");
+            embeddedKafkaBroker = new EmbeddedKafkaBroker(1, true, 1, "test-topic");
+            embeddedKafkaBroker.afterPropertiesSet();
+            System.out.println("EmbeddedKafkaBroker created");
+        }
+    }
 
     @Test
     public void testConsumerRunnerConsumesMessages() {
