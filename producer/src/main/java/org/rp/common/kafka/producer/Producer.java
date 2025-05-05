@@ -93,7 +93,7 @@ public class Producer<K,V> implements org.apache.kafka.clients.producer.Producer
         this.producer = producer;
     }
 
-    public Producer(java.util.Properties properties)
+    public Producer(Map<String,Object> properties)
     {
         this(new KafkaProducer<>(properties));
     }
