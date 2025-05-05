@@ -22,25 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         topics = {"test-topic"},
         brokerProperties = {"listeners=PLAINTEXT://localhost:0", "port=0"})
 public class KafkaConsumerIntegrationTest {
-
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
-    @BeforeEach
-    public void setUp() {
-        System.out.println("Setting up EmbeddedKafkaBroker");
-        if (embeddedKafkaBroker == null) {
-            System.out.println("Creating new EmbeddedKafkaBroker");
-            embeddedKafkaBroker = new EmbeddedKafkaBroker(1, true, 1, "test-topic");
-            embeddedKafkaBroker.afterPropertiesSet();
-            System.out.println("EmbeddedKafkaBroker created");
-        }
-    }
-
     @Test
     public void testConsumerRunnerConsumesMessages() {
-        System.out.println("Starting testConsumerRunnerConsumesMessages");
-
         // Arrange
         Map<String, Object> producerProps = KafkaTestUtils.producerProps(embeddedKafkaBroker);
         producerProps.put("key.serializer", StringSerializer.class);
