@@ -5,7 +5,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +18,18 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = {Main.class})
 @EmbeddedKafka(partitions = 2,
-        topics = {"test-topic","partition-test-topic"},
+        topics = {"test-topic", "partition-test-topic"},
         brokerProperties = {"listeners=PLAINTEXT://localhost:0", "port=0"})
 public class KafkaConsumerIntegrationTest {
+    private static final Logger logger = LoggerFactory.getLogger(KafkaConsumerIntegrationTest.class);
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
-    private static final Logger logger = LoggerFactory.getLogger(KafkaConsumerIntegrationTest.class);
+
     @Test
     public void shouldConsumeSingleMessageSuccessfully() {
         // Arrange
@@ -36,7 +37,7 @@ public class KafkaConsumerIntegrationTest {
         producerProps.put("key.serializer", StringSerializer.class);
         producerProps.put("value.serializer", StringSerializer.class);
         DefaultKafkaProducerFactory<String, String> producerFactory = new DefaultKafkaProducerFactory<>(producerProps);
-        try(var producer = producerFactory.createProducer()) {
+        try (var producer = producerFactory.createProducer()) {
 
             String key = "test-key";
             String value = "test-value";
@@ -49,11 +50,11 @@ public class KafkaConsumerIntegrationTest {
             consumerProps.put("key.deserializer", StringDeserializer.class);
             consumerProps.put("value.deserializer", StringDeserializer.class);
 
-            try (var consumer = new Consumer<String,String>(consumerProps)) {
+            try (var consumer = new Consumer<String, String>(consumerProps)) {
                 consumer.subscribe(Collections.singletonList("test-topic"));
 
                 // Poll and validate the message
-                var records =consumer.poll(1000);
+                var records = consumer.poll(Duration.ofSeconds(1));
 
                 // Assert
                 assertEquals(1, records.count());
@@ -78,8 +79,8 @@ public class KafkaConsumerIntegrationTest {
         consumerProps.put("key.deserializer", StringDeserializer.class);
         consumerProps.put("value.deserializer", StringDeserializer.class);
 
-        try(var producer = producerFactory.createProducer()) {
-            try (var consumer = new Consumer<String,String>(consumerProps)) {
+        try (var producer = producerFactory.createProducer()) {
+            try (var consumer = new Consumer<String, String>(consumerProps)) {
                 consumer.subscribe(Collections.singletonList("test-topic"));
 
                 //Act
@@ -94,7 +95,7 @@ public class KafkaConsumerIntegrationTest {
                 producer.flush();
 
                 // Poll and validate the message
-                var records =consumer.poll(1000);
+                var records = consumer.poll(Duration.ofSeconds(1));
 
                 // validate the message order
                 int expectedValue = 0;
@@ -110,6 +111,7 @@ public class KafkaConsumerIntegrationTest {
             }
         }
     }
+
     @Test
     public void shouldDistributeMessagesAcrossMultipleConsumers() {
         // Arrange
@@ -131,18 +133,18 @@ public class KafkaConsumerIntegrationTest {
              var consumer1 = new Consumer<String, String>(consumerProps1);
              var consumer2 = new Consumer<String, String>(consumerProps2)) {
 
-            consumer1.assign(Collections.singletonList(new TopicPartition("partition-test-topic",0)));
-            consumer2.assign(Collections.singletonList(new TopicPartition("partition-test-topic",1)));
+            consumer1.assign(Collections.singletonList(new TopicPartition("partition-test-topic", 0)));
+            consumer2.assign(Collections.singletonList(new TopicPartition("partition-test-topic", 1)));
 
             logger.debug("Starting to send messages...");
             // Act
             String key1 = "test-key1";
             for (var i = 0; i < 10; i++) {
-                producer.send(new ProducerRecord<>("partition-test-topic", 0,key1, String.valueOf(i)));
+                producer.send(new ProducerRecord<>("partition-test-topic", 0, key1, String.valueOf(i)));
             }
             String key2 = "test-key2";
             for (var i = 0; i < 100; i++) {
-                producer.send(new ProducerRecord<>("partition-test-topic", 1,key2, String.valueOf(i)));
+                producer.send(new ProducerRecord<>("partition-test-topic", 1, key2, String.valueOf(i)));
             }
             producer.flush();
             logger.debug("Finished sending messages...");
@@ -155,13 +157,13 @@ public class KafkaConsumerIntegrationTest {
             for (ConsumerRecord<String, String> record : records1) {
                 assertEquals("test-key1", record.key());
             }
-            assertEquals(10,records1.count());
+            assertEquals(10, records1.count());
 
             // Assert that key2 messages went to consumer2
             for (ConsumerRecord<String, String> record : records2) {
                 assertEquals("test-key2", record.key());
             }
-            assertEquals(100,records2.count());
+            assertEquals(100, records2.count());
         }
     }
 }
