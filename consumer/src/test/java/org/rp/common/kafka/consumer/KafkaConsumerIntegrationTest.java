@@ -28,6 +28,7 @@ public class KafkaConsumerIntegrationTest {
 
     @BeforeEach
     public void setUp() {
+        System.out.println("Setting up EmbeddedKafkaBroker");
         if (embeddedKafkaBroker == null) {
             System.out.println("Creating new EmbeddedKafkaBroker");
             embeddedKafkaBroker = new EmbeddedKafkaBroker(1, true, 1, "test-topic");
@@ -38,6 +39,8 @@ public class KafkaConsumerIntegrationTest {
 
     @Test
     public void testConsumerRunnerConsumesMessages() {
+        System.out.println("Starting testConsumerRunnerConsumesMessages");
+
         // Arrange
         Map<String, Object> producerProps = KafkaTestUtils.producerProps(embeddedKafkaBroker);
         producerProps.put("key.serializer", StringSerializer.class);
