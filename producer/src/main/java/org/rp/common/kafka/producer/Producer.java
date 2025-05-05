@@ -12,6 +12,7 @@ import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.ProducerFencedException;
 import org.rp.common.kafka.Properties;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.Duration;
 import java.util.List;
@@ -95,15 +96,5 @@ public class Producer<K,V> implements org.apache.kafka.clients.producer.Producer
     public Producer(java.util.Properties properties)
     {
         this(new KafkaProducer<>(properties));
-    }
-
-    public static void main(String[] args) {
-        var props = Properties.getProducerProperties(System.getenv("KAFKA_BOOTSTRAP_SERVERS"));
-        var producer = new Producer<String,String>(props);
-        for (int i = 0; i < 10; i++) {
-            producer.send(new ProducerRecord<>("test-topic", "key-" + i, "value-" + i));
-            System.out.println("Sent record: key = key-" + i + ", value = value-" + i);
-        }
-        producer.close();
     }
 }

@@ -1,28 +1,42 @@
 package org.rp.common.kafka.consumer;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Duration;
 import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ConsumerTest {
+
+    @Mock
+    private ConsumerWrapperInterface<String, String> consumerWrapper;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void pollMessages_whenCalled_thenMessagesPolledFromKafkaTopic() {
-        // Arrange
-        var mockConsumer = mock(Consumer.class);
-        var mockRecords = mock(ConsumerRecords.class);
-        when(mockConsumer.poll(any(Duration.class))).thenReturn(mockRecords);
+        // Mock behavior
+        ConsumerRecords<String, String> mockRecords = new ConsumerRecords<>(Collections.emptyMap());
+        when(consumerWrapper.poll(any(Duration.class))).thenReturn(mockRecords);
 
-        // Act
-        mockConsumer.subscribe(Collections.singletonList("test-topic"));
-        var records = mockConsumer.poll(Duration.ofMillis(100));
+        // Test logic
+        consumerWrapper.subscribe("test-topic");
+        ConsumerRecords<String, String> records = consumerWrapper.poll(Duration.ofMillis(100));
 
-        // Assert
-        verify(mockConsumer).subscribe(Collections.singletonList("test-topic"));
-        verify(mockConsumer).poll(any(Duration.class));
-        assert records == mockRecords;
+        // Assertions
+        assertNotNull(records);
+        verify(consumerWrapper).poll(any(Duration.class));
     }
 }

@@ -5,6 +5,7 @@ import org.apache.kafka.common.Metric;
 import org.apache.kafka.common.MetricName;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.Duration;
 import java.util.*;
@@ -264,17 +265,5 @@ public class Consumer<K, V> implements org.apache.kafka.clients.consumer.Consume
     @Override
     public void wakeup() {
         consumer.wakeup();
-    }
-
-    public static void main(String[] args) {
-        var props = org.rp.common.kafka.Properties.getConsumerProperties(System.getenv("KAFKA_BOOTSTRAP_SERVERS"));
-        try (var consumer = new Consumer<String,String>(props)) {
-            consumer.subscribe(Collections.singletonList("test-topic"));
-
-            while (true) {
-                var records = consumer.poll(Duration.ofMillis(100));
-                records.forEach(record -> System.out.printf("Consumed record: key = %s, value = %s%n", record.key(), record.value()));
-            }
-        }
     }
 }
