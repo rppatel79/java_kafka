@@ -14,11 +14,12 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 
 import java.util.Collections;
 import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = Main.class)
-@EmbeddedKafka(partitions = 1, topics = {"test-topic"}, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
+@SpringBootTest(classes = {Main.class})
+@EmbeddedKafka(partitions = 1,
+        topics = {"test-topic"},
+        brokerProperties = {"listeners=PLAINTEXT://localhost:0", "port=0"})
 public class KafkaConsumerIntegrationTest {
 
     @Autowired
