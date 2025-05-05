@@ -19,7 +19,7 @@ public class Consumer<K, V> implements org.apache.kafka.clients.consumer.Consume
         this.consumer = consumer;
     }
 
-    public Consumer(java.util.Properties prop)
+    public Consumer(Map<String, Object> prop)
     {
         this(new KafkaConsumer<>(prop));
     }
